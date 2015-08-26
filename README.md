@@ -1,6 +1,4 @@
 #################
 # Title
 #################
-Test repository for destructuve type of Git Experiments
-
-.......
+Test repository for destructive type of Git Experiments
