@@ -20,8 +20,8 @@
 # Utility for creating well-formed pull request merges and pushing them to Apache.
 #   usage: ./apache-pr-merge.py    (see config env vars below)
 #
-# This utility assumes you already have local a Spark git folder and that you
-# have added remotes corresponding to both (i) the github apache Spark
+# This utility assumes you already have local project git folder and that you
+# have added remotes corresponding to both (i) the github apache
 # mirror and (ii) the apache git repo.
 
 import json
@@ -31,12 +31,12 @@ import subprocess
 import sys
 import urllib2
 
-# Location of your Spark git development area
+# Location of your project git development area
 PROJECT_HOME = os.environ.get("PROJECT_HOME", os.getcwd())
 # Remote name which points to the Gihub site
 PR_REMOTE_NAME = os.environ.get("PR_REMOTE_NAME", "origin")
 # Remote name which points to Apache git
-PUSH_REMOTE_NAME = os.environ.get("PUSH_REMOTE_NAME", "origin") #SparkTC
+PUSH_REMOTE_NAME = os.environ.get("PUSH_REMOTE_NAME", "origin")
 
 # OAuth key used for issuing requests against the GitHub API. If this is not defined, then requests
 # will be unauthenticated. You should only need to configure this if you find yourself regularly
@@ -133,7 +133,7 @@ def merge_pr(pr_num, target_ref, title, body, pr_repo_desc):
     merge_message_flags += ["-m", title]
     if body is not None:
         # We remove @ symbols from the body to avoid triggering e-mails
-        # to people every time someone creates a public fork of Spark.
+        # to people every time someone creates a public fork of the project.
         merge_message_flags += ["-m", body.replace("@", "")]
 
     authors = "\n".join(["Author: %s" % a for a in distinct_authors])
@@ -213,24 +213,24 @@ def fix_version_from_branch(branch, versions):
 
 def standardize_jira_ref(text):
     """
-    Standardize the [SPARK-XXXXX] [MODULE] prefix
-    Converts "[SPARK-XXX][mllib] Issue", "[MLLib] SPARK-XXX. Issue" or "SPARK XXX [MLLIB]: Issue" to "[SPARK-XXX] [MLLIB] Issue"
-    >>> standardize_jira_ref("[SPARK-5821] [SQL] ParquetRelation2 CTAS should check if delete is successful")
-    '[SPARK-5821] [SQL] ParquetRelation2 CTAS should check if delete is successful'
-    >>> standardize_jira_ref("[SPARK-4123][Project Infra][WIP]: Show new dependencies added in pull requests")
-    '[SPARK-4123] [PROJECT INFRA] [WIP] Show new dependencies added in pull requests'
+    Standardize the [PROJECT-XXXXX] [MODULE] prefix
+    Converts "[PROJECT-XXX][mllib] Issue", "[MLLib] PROJECT-XXX. Issue" or "PROJECT XXX [MLLIB]: Issue" to "[PROJECT-XXX] [MLLIB] Issue"
+    >>> standardize_jira_ref("[PROJECT-5821] [SQL] ParquetRelation2 CTAS should check if delete is successful")
+    '[PROJECT-5821] [SQL] ParquetRelation2 CTAS should check if delete is successful'
+    >>> standardize_jira_ref("[PROJECT-4123][Project Infra][WIP]: Show new dependencies added in pull requests")
+    '[PROJECT-4123] [PROJECT INFRA] [WIP] Show new dependencies added in pull requests'
     >>> standardize_jira_ref("[MLlib] Spark  5954: Top by key")
-    '[SPARK-5954] [MLLIB] Top by key'
-    >>> standardize_jira_ref("[SPARK-979] a LRU scheduler for load balancing in TaskSchedulerImpl")
-    '[SPARK-979] a LRU scheduler for load balancing in TaskSchedulerImpl'
+    '[PROJECT-5954] [MLLIB] Top by key'
+    >>> standardize_jira_ref("[PROJECT-979] a LRU scheduler for load balancing in TaskSchedulerImpl")
+    '[PROJECT-979] a LRU scheduler for load balancing in TaskSchedulerImpl'
     >>> standardize_jira_ref("SPARK-1094 Support MiMa for reporting binary compatibility accross versions.")
-    '[SPARK-1094] Support MiMa for reporting binary compatibility accross versions.'
-    >>> standardize_jira_ref("[WIP]  [SPARK-1146] Vagrant support for Spark")
-    '[SPARK-1146] [WIP] Vagrant support for Spark'
-    >>> standardize_jira_ref("SPARK-1032. If Yarn app fails before registering, app master stays aroun...")
-    '[SPARK-1032] If Yarn app fails before registering, app master stays aroun...'
-    >>> standardize_jira_ref("[SPARK-6250][SPARK-6146][SPARK-5911][SQL] Types are now reserved words in DDL parser.")
-    '[SPARK-6250] [SPARK-6146] [SPARK-5911] [SQL] Types are now reserved words in DDL parser.'
+    '[PROJECT-1094] Support MiMa for reporting binary compatibility accross versions.'
+    >>> standardize_jira_ref("[WIP]  [PROJECT-1146] Vagrant support for Spark")
+    '[PROJECT-1146] [WIP] Vagrant support for Spark'
+    >>> standardize_jira_ref("PROJECT-1032. If Yarn app fails before registering, app master stays aroun...")
+    '[PROJECT-1032] If Yarn app fails before registering, app master stays aroun...'
+    >>> standardize_jira_ref("[PROJECT-6250][PROJECT-6146][PROJECT-5911][SQL] Types are now reserved words in DDL parser.")
+    '[PROJECT-6250] [PROJECT-6146] [PROJECT-5911] [SQL] Types are now reserved words in DDL parser.'
     >>> standardize_jira_ref("Additional information for users building from source code")
     'Additional information for users building from source code'
     """
@@ -238,17 +238,17 @@ def standardize_jira_ref(text):
     components = []
 
     # If the string is compliant, no need to process any further
-    if (re.search(r'^\[SPARK-[0-9]{3,6}\] (\[[A-Z0-9_\s,]+\] )+\S+', text)):
+    if (re.search(r'^\[PROJECT-[0-9]{3,6}\] (\[[A-Z0-9_\s,]+\] )+\S+', text)):
         return text
 
     # Extract JIRA ref(s):
-    pattern = re.compile(r'(SPARK[-\s]*[0-9]{3,6})+', re.IGNORECASE)
+    pattern = re.compile(r'(PROJECT[-\s]*[0-9]{3,6})+', re.IGNORECASE)
     for ref in pattern.findall(text):
         # Add brackets, replace spaces with a dash, & convert to uppercase
         jira_refs.append('[' + re.sub(r'\s+', '-', ref.upper()) + ']')
         text = text.replace(ref, '')
 
-    # Extract spark component(s):
+    # Extract project component(s):
     # Look for alphanumeric chars, spaces, dashes, periods, and/or commas
     pattern = re.compile(r'(\[[\w\s,-\.]+\])', re.IGNORECASE)
     for component in pattern.findall(text):
