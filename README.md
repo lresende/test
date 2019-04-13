@@ -9,6 +9,8 @@ This is a sample project that utilize different IOC containers to wire different
 
 Changelog
 
+v0.3 - another thing
+
 v0.2 - something
 
 ...
