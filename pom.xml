@@ -7,7 +7,7 @@
     </parent>
     <groupId>com.ibm.biginsights</groupId>
     <artifactId>ioc-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
     <licenses>
       <license>
@@ -20,7 +20,7 @@
       <connection>scm:git:git@github.com:lresende/test.git</connection>
       <developerConnection>scm:git:ssh:git@github.com:lresende/test.git</developerConnection>
       <url>https://github.com/lresende/test</url>
-      <tag>HEAD</tag>
+      <tag>v0.3.0</tag>
   </scm>
 
     <modules>
