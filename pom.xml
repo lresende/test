@@ -18,8 +18,8 @@
     </licenses>
     <scm>
       <connection>scm:git:git@github.com:lresende/test.git</connection>
-      <developerConnection>scm:git:https://github.com/lresende/test.git</developerConnection>
-      <url>scm:git:git@github.com:lresende/test.git</url>
+      <developerConnection>scm:git:ssh:git@github.com:lresende/test.git</developerConnection>
+      <url>https://github.com/lresende/test</url>
       <tag>HEAD</tag>
   </scm>
 
